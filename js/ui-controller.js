@@ -3,10 +3,10 @@
  */
 
 const AZ_CITIES = [
-  'BakД±', 'SumqayД±t', 'GЙ™ncЙ™', 'MingЙ™Г§evir', 'XД±rdalan', 'Ећirvan', 'NaxГ§Д±van', 'LЙ™nkЙ™ran',
-  'Yevlax', 'ЕћЙ™ki', 'Quba', 'XaГ§maz', 'Qusar', 'ЕћamaxД±', 'Д°smayД±llД±', 'GГ¶yГ§ay', 'BЙ™rdЙ™',
-  'TЙ™rtЙ™r', 'AДџdam', 'FГјzuli', 'CЙ™lilabad', 'Salyan', 'MasallД±', 'ЕћЙ™mkir', 'Tovuz', 'Qazax',
-  'Zaqatala', 'BalakЙ™n', 'QЙ™bЙ™lЙ™', 'SaatlД±', 'Sabirabad', 'Д°miЕџli', 'NeftГ§ala', 'Astara'
+  'Bakı', 'Sumqayıt', 'Gəncə™', 'Mingəçevir', 'Xırdalan', 'Şirvan', 'Naxçıvan', 'Lənkəran',
+  'Yevlax', 'Şəki', 'Quba', 'Xaçmaz', 'Qusar', 'Şamaxı', 'İsmayıllı', 'Göyçay', 'Bərdə',
+  'Tərtər', 'Ağdam', 'Füzuli', 'Cəlilabad', 'Salyan', 'Masallı', 'Şəmkir', 'Tovuz', 'Qazax',
+  'Zaqatala', 'Balakən', 'Qəbələ™', 'Saatlı', 'Sabirabad', 'İmişli', 'Neftçala', 'Astara'
 ].sort((a, b) => a.localeCompare(b, 'az'));
 
 let tempUserData = {};
