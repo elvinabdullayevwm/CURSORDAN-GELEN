@@ -32,7 +32,7 @@ function clearSession() {
 function applyLoggedInUI(user) {
   document.getElementById('dashUserName').innerText = `${user.name} ${user.surname}`;
   document.getElementById('dashUserId').innerText = user.id;
-  document.getElementById('dashUserMmc').innerText = user.mmc || 'ЕћЙ™xsi Hesab';
+  document.getElementById('dashUserMmc').innerText = user.mmc || 'Şəxsi Hesab';
   document.getElementById('dashUserPhone').innerText = user.phone || '-';
 
   const mainLoginBtn = document.getElementById('loginBtn');
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function fillCitySelect(selectId) {
   const el = document.getElementById(selectId);
   if (!el || el.options.length > 1) return;
-  const placeholder = el.querySelector('option[value=""]')?.outerHTML || '<option value="">SeГ§in *</option>';
+  const placeholder = el.querySelector('option[value=""]')?.outerHTML || '<option value="">Seçin *</option>';
   el.innerHTML = placeholder;
   AZ_CITIES.forEach(city => {
     const opt = document.createElement('option');
@@ -146,24 +146,24 @@ document.getElementById('startRegBtn')?.addEventListener('click', async () => {
   const pass = document.getElementById('regPassword').value;
 
   if (!name || !surname || !email || !phone || !city || !birth || !pass) {
-    alert('ZЙ™hmЙ™t olmasa bГјtГјn vacib (*) xanalarД± doldurun!');
+    alert('Zəhmət olmasa bütüb vacib xanaları doldurun(*)!');
     return;
   }
 
   const btn = document.getElementById('startRegBtn');
   btn.disabled = true;
-  btn.innerText = 'YoxlanД±lД±r...';
+  btn.innerText = 'Yoxlanılır...';
 
   try {
     const check = await apiCheckUser(email, phone);
     if (check.exists) {
-      alert('Bu e-mail vЙ™ ya nГ¶mrЙ™ artД±q sistemdЙ™ mГ¶vcuddur!');
+      alert('Bu e-mail və ya nömrə sistemdə mövcuddur!');
       return;
     }
 
     const otpRes = await apiSendOtp(email);
     if (otpRes.status !== 'success') {
-      alert(otpRes.message || 'OTP gГ¶ndЙ™rilmЙ™di.');
+      alert(otpRes.message || 'OTP göndərilmədi.');
       return;
     }
 
@@ -171,34 +171,34 @@ document.getElementById('startRegBtn')?.addEventListener('click', async () => {
 
     document.getElementById('regFormArea').style.display = 'none';
     document.getElementById('otpFormArea').style.display = 'block';
-    alert('MailinizЙ™ tЙ™sdiq kodu gГ¶ndЙ™rildi.');
+    alert('Mailinizə təsdiq kodu göndərildi.');
   } catch (err) {
     alert('BaДџlantД± xЙ™tasД±: ' + err.message);
   } finally {
     btn.disabled = false;
-    btn.innerText = 'QEYDД°YYATDAN KEГ‡';
+    btn.innerText = 'Qeydiyyatdan keç';
   }
 });
 
 document.getElementById('verifyOtpBtn')?.addEventListener('click', async () => {
   const otp = document.getElementById('otpInput').value.trim();
   if (!otp || otp.length !== 4) {
-    alert('4 rЙ™qЙ™mli kodu daxil edin.');
+    alert('4 rəqəmli kodu daxil edin.');
     return;
   }
 
   const btn = document.getElementById('verifyOtpBtn');
   btn.disabled = true;
-  btn.innerText = 'TamamlanД±r...';
+  btn.innerText = 'Tamamlanır...';
 
   try {
     const result = await apiRegisterUser({ ...tempUserData, otp });
     if (result.status !== 'success') {
-      alert(result.message || 'Qeydiyyat alД±nmadД±.');
+      alert(result.message || 'Qeydiyyat alınmadı.');
       return;
     }
 
-    alert(`Qeydiyyat tamamlandД±! MГјЕџtЙ™ri ID: ${result.user.id}`);
+    alert(`Qeydiyyat tamamlandı: müştəri ID: ${result.user.id}`);
     document.getElementById('otpFormArea').style.display = 'none';
     document.getElementById('loginFormArea').style.display = 'block';
     document.getElementById('loginId').value = result.user.email;
@@ -218,17 +218,17 @@ async function handleLoginProcess() {
   const submitBtn = document.getElementById('submitLoginBtn');
 
   if (!loginId || !loginPass) {
-    alert('BГјtГјn xanalarД± doldurun!');
+    alert('Bütün xanaları doldurun!');
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.innerText = 'YoxlanД±lД±r...';
+  submitBtn.innerText = 'Yoxlanılır...';
 
   try {
     const result = await apiLogin(loginId, loginPass);
     if (result.status !== 'Success') {
-      alert(result.message || 'GiriЕџ uДџursuz.');
+      alert(result.message || 'Giriş uğursuz.');
       return;
     }
 
@@ -250,10 +250,10 @@ async function handleLoginProcess() {
     loadMarketplace();
     loadLiveStats();
   } catch (err) {
-    alert('GiriЕџ xЙ™tasД±: ' + err.message);
+    alert('Giriş xətası: ' + err.message);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerText = 'DAXД°L OL';
+    submitBtn.innerText = 'DAXİL OL';
   }
 }
 
@@ -265,14 +265,14 @@ function toggleUserDropdown(event) {
 
 function openSettings(event) {
   if (event) event.preventDefault();
-  alert('Ayarlar bГ¶lmЙ™si tezliklЙ™ aktiv edilЙ™cЙ™k.');
+  alert('Ayarlar bölməsi tezliklə aktiv olacaq.');
   const menu = document.getElementById('userDropdownMenu');
   if (menu) menu.style.display = 'none';
 }
 
 function logoutUser(event) {
   if (event) event.preventDefault();
-  if (!confirm('Г‡Д±xmaq istЙ™diyinizЙ™ Й™minsiniz?')) return;
+  if (!confirm('Çıxmaq istədiyinizə əminsiniz?')) return;
   applyLoggedOutUI();
   scrollToSection('home');
 }
@@ -294,22 +294,22 @@ function handleDashboardAction(actionType) {
       openNewRouteModal();
       break;
     case 'active-orders':
-      showMyListModal('Aktiv sifariЕџlЙ™rim', 'orders', 'Aktiv');
+      showMyListModal('Aktiv sifarişlərim', 'orders', 'Aktiv');
       break;
     case 'in-progress-orders':
-      showMyListModal('Д°crada sifariЕџlЙ™rim', 'orders', 'Д°crada');
+      showMyListModal('İcrada olan sifarişlərim', 'orders', 'İcrada');
       break;
     case 'delivered-orders':
-      showMyListModal('TЙ™slim edilЙ™n sifariЕџlЙ™rim', 'orders', 'TЙ™slim edildi');
+      showMyListModal('Təslim edilən sifarişlərim', 'orders', 'Təslimm edildi');
       break;
     case 'active-routes':
-      showMyListModal('Aktiv reyslЙ™rim', 'routes', 'Aktiv');
+      showMyListModal('Aktiv reyslərim', 'routes', 'Aktiv');
       break;
     case 'in-progress-routes':
-      showMyListModal('Д°crada reyslЙ™rim', 'routes', 'Д°crada');
+      showMyListModal('İcrada olan reyslərim', 'routes', 'İcrada');
       break;
     case 'completed-routes':
-      showMyListModal('TamamlanmД±Еџ reyslЙ™rim', 'routes', 'TamamlandД±');
+      showMyListModal('Tamamlanmış reyslərim', 'routes', 'Tamamlandı');
       break;
     case 'search-orders':
     case 'search-routes':
@@ -374,13 +374,13 @@ function submitNewOrder(event) {
         loadMarketplace();
         loadLiveStats();
       } else {
-        alert(res.message || 'XЙ™ta');
+        alert(res.message || 'Xəta');
       }
     })
     .catch(err => alert('XЙ™ta: ' + err.message))
     .finally(() => {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'SД°FARД°ЕћД° TЖЏSDД°QLЖЏ VЖЏ PAYLAЕћ';
+      submitBtn.textContent = 'SİFARİŞİ TƏSDİQLƏ VƏ PAYLAŞ';
     });
 }
 
@@ -427,18 +427,18 @@ function submitNewRoute(event) {
   apiNewRoute(routeData, session.id)
     .then(res => {
       if (res.status === 'success') {
-        alert(`Reys yaradД±ldД±: ${res.routeID}`);
+        alert(`Reys yaradıldı: ${res.routeID}`);
         closeNewRouteModal();
         loadMarketplace();
         loadLiveStats();
       } else {
-        alert(res.message || 'XЙ™ta');
+        alert(res.message || 'Xəta');
       }
     })
     .catch(err => alert('XЙ™ta: ' + err.message))
     .finally(() => {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'REYSД° TЖЏSDД°QLЖЏ VЖЏ PAYLAЕћ';
+      submitBtn.textContent = 'REYSİ TƏSDİQLƏ VƏ PAYLAŞ';
     });
 }
 
@@ -448,8 +448,8 @@ async function loadMarketplace() {
   const routesEl = document.getElementById('marketplaceRoutes');
   if (!ordersEl || !routesEl) return;
 
-  ordersEl.innerHTML = '<p class="mp-loading">YГјklЙ™nir...</p>';
-  routesEl.innerHTML = '<p class="mp-loading">YГјklЙ™nir...</p>';
+  ordersEl.innerHTML = '<p class="mp-loading">Yüklənir...</p>';
+  routesEl.innerHTML = '<p class="mp-loading">Yüklənir...</p>';
 
   try {
     const [ordersRes, routesRes] = await Promise.all([
@@ -460,8 +460,8 @@ async function loadMarketplace() {
     ordersEl.innerHTML = renderOrdersList(ordersRes.orders || []);
     routesEl.innerHTML = renderRoutesList(routesRes.routes || []);
   } catch (err) {
-    ordersEl.innerHTML = `<p class="mp-error">XЙ™ta: ${err.message}</p>`;
-    routesEl.innerHTML = `<p class="mp-error">XЙ™ta: ${err.message}</p>`;
+    ordersEl.innerHTML = `<p class="mp-error">Xəta: ${err.message}</p>`;
+    routesEl.innerHTML = `<p class="mp-error">Xəta: ${err.message}</p>`;
   }
 }
 
