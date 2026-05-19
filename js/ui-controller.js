@@ -338,14 +338,14 @@ function submitNewOrder(event) {
   event.preventDefault();
   const session = getSession();
   if (!session) {
-    alert('SifariЕџ ГјГ§Гјn daxil olun.');
+    alert('Sifariş üçün daxil olun.');
     openLogin();
     return;
   }
 
   const submitBtn = document.getElementById('submitOrderBtn');
   submitBtn.disabled = true;
-  submitBtn.textContent = 'GГ–NDЖЏRД°LД°R...';
+  submitBtn.textContent = 'Göndərilir...';
 
   const orderData = {
     goodType: document.getElementById('orderGoodType').value,
@@ -369,7 +369,7 @@ function submitNewOrder(event) {
   apiNewOrder(orderData, session.id)
     .then(res => {
       if (res.status === 'success') {
-        alert(`SifariЕџ yaradД±ldД±: ${res.orderID}`);
+        alert(`Sifariş yaradıldı: ${res.orderID}`);
         closeNewOrderModal();
         loadMarketplace();
         loadLiveStats();
@@ -377,7 +377,7 @@ function submitNewOrder(event) {
         alert(res.message || 'Xəta');
       }
     })
-    .catch(err => alert('XЙ™ta: ' + err.message))
+    .catch(err => alert('Xəta: ' + err.message))
     .finally(() => {
       submitBtn.disabled = false;
       submitBtn.textContent = 'SİFARİŞİ TƏSDİQLƏ VƏ PAYLAŞ';
@@ -402,14 +402,14 @@ function submitNewRoute(event) {
   event.preventDefault();
   const session = getSession();
   if (!session) {
-    alert('Reys ГјГ§Гјn daxil olun.');
+    alert('Reys üçün daxil olun.');
     openLogin();
     return;
   }
 
   const submitBtn = document.getElementById('submitRouteBtn');
   submitBtn.disabled = true;
-  submitBtn.textContent = 'GГ–NDЖЏRД°LД°R...';
+  submitBtn.textContent = 'Göndərilir...';
 
   const routeData = {
     vehicleType: document.getElementById('routeVehicleType').value,
@@ -435,14 +435,14 @@ function submitNewRoute(event) {
         alert(res.message || 'Xəta');
       }
     })
-    .catch(err => alert('XЙ™ta: ' + err.message))
+    .catch(err => alert('Xəta: ' + err.message))
     .finally(() => {
       submitBtn.disabled = false;
       submitBtn.textContent = 'REYSİ TƏSDİQLƏ VƏ PAYLAŞ';
     });
 }
 
-// --- Marketplace (hamД± gГ¶rГјr) ---
+// --- Marketplace (hamı görür) ---
 async function loadMarketplace() {
   const ordersEl = document.getElementById('marketplaceOrders');
   const routesEl = document.getElementById('marketplaceRoutes');
