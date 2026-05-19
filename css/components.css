@@ -1,0 +1,342 @@
+/* 1. ÜMUMİ AYARLAR VƏ PREMİUM FONT */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+:root {
+    --primary: #A68B5C;
+    --primary-dark: #8e754a;
+    --dark: #1a1a1a;
+    --light: #f9f9f9;
+    --white: #ffffff;
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--white);
+    color: #333;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* 2. NAVBAR VƏ MOBİL MENYU */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    background: var(--white);
+    height: 90px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    z-index: 1100;
+}
+
+.site-logo {
+    max-height: 65px;
+    cursor: pointer;
+}
+
+.nav-links ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links li {
+    font-weight: 600;
+    color: #444;
+    cursor: pointer;
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.nav-links li:hover {
+    color: var(--primary);
+}
+
+/* Hamburger Düyməsi */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 6px;
+    z-index: 1100;
+}
+
+.menu-toggle .bar {
+    width: 28px;
+    height: 3px;
+    background-color: var(--dark);
+    transition: var(--transition);
+    border-radius: 2px;
+}
+
+/* 3. HERO SECTION (RESPONSIVE) */
+.hero {
+    height: 85vh;
+    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
+                url('../img/hero-bg.png') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero-content h1 {
+    font-size: clamp(32px, 5vw, 52px); /* Dinamik ölçü */
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.hero-content p {
+    font-size: clamp(14px, 2vw, 18px);
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.search-panel {
+    background: var(--white);
+    padding: 8px;
+    border-radius: 15px;
+    display: flex;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.search-panel input {
+    flex: 1;
+    border: none;
+    padding: 15px;
+    outline: none;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+/* 4. STATİSTİKA */
+.live-activity {
+    padding: 60px 5%;
+    background: var(--light);
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stat-box {
+    background: var(--white);
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.stat-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(166, 139, 92, 0.15);
+}
+
+.stat-box .num {
+    display: block;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.stat-box .lab {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* 5. DÜYMƏLƏR */
+.btn-customer {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-customer:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 8px 20px rgba(166, 139, 92, 0.3);
+}
+
+.btn-search {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 0 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* 6. XİDMƏTLƏR VƏ AVTOPARK */
+.premium-services {
+    padding: 100px 10%;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 60px;
+    color: var(--dark);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.service-card {
+    padding: 50px 35px;
+    border-radius: 25px;
+    background: var(--white);
+    border: 1px solid #eee;
+    transition: var(--transition);
+}
+
+.service-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-5px);
+}
+
+.fleet-icon {
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+/* 7. MODAL SİSTEMİ */
+.activity-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 30px;
+    width: 95%;
+    max-width: 500px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    outline: none;
+    font-size: 15px;
+    background: #fcfcfc;
+}
+
+/* 8. MOBİL UYĞUNLUQ (MEDIA QUERIES) */
+@media (max-width: 992px) {
+    .pc-only { display: none; }
+    .menu-toggle { display: flex; }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background: var(--white);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        transition: 0.4s ease-in-out;
+        z-index: 1050;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-links ul {
+        flex-direction: column;
+        padding-top: 120px;
+        gap: 25px;
+    }
+
+    .nav-links li {
+        font-size: 20px;
+    }
+
+    .mobile-only {
+        display: block;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .search-panel {
+        flex-direction: column;
+        background: transparent;
+        box-shadow: none;
+    }
+    .search-panel input {
+        margin-bottom: 12px;
+        background: var(--white);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .btn-search {
+        padding: 18px;
+    }
+    .navbar {
+        height: 75px;
+    }
+    .hero {
+        height: 70vh;
+    }
+    .stats-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    .stat-box:last-child {
+        grid-column: span 2;
+    }
+}
+
+/* Animasiya üçün xüsusi klass */
+.nav-links.active ~ .menu-toggle .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+.nav-links.active ~ .menu-toggle .bar:nth-child(2) { opacity: 0; }
+.nav-links.active ~ .menu-toggle .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }

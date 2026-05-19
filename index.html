@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yolasal - Professional Loqistika Platforması</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/components.css">
+    
+    <style>
+        /* ==========================================================================
+           YENİ SİFARİŞ MODALININ MƏRKƏZLƏŞDİRİLMƏSİ VƏ MOBİL UYĞUNLUĞU
+           ========================================================================== */
+
+        /* Modalı Ekranın Tam Ortasına Gətirən Mərkəzi Struktur */
+        #newOrderModal {
+            display: none; /* İlkin olaraq gizli */
+            position: fixed !important;
+            z-index: 9999 !important; /* Hər şeyin önündə durması üçün */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto; /* Form uzun olarsa aşağı sürüşdürmək üçün */
+            background-color: rgba(0, 0, 0, 0.5) !important; /* Arxa fonu qaraltmaq */
+            backdrop-filter: blur(4px); /* Müasir dumanlı fon effekti */
+        }
+
+        /* Modal İçindəki Ağ Qutu (Konteyner) */
+        #newOrderModal .modal-content {
+            background-color: #ffffff !important;
+            margin: 30px auto !important; /* Yuxarı-aşağıdan məsafə, sağ-soldan avtomatik mərkəzləmə */
+            padding: 30px !important;
+            border: none !important;
+            border-radius: 16px !important;
+            width: 90% !important; /* Mobil telefonlar üçün ekranın 90%-ni tutsun */
+            max-width: 650px !important; /* Masaüstü kompüterlərdə maksimum genişlik */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25) !important;
+            position: relative !important;
+            box-sizing: border-box !important;
+            animation: modalSlideDown 0.3s ease-out; /* Yuxarıdan aşağı yumşaq düşmə animasiyası */
+        }
+
+        /* Bütün input, select və textarea elementlərinin tam enlikdə olması */
+        #newOrderModal .form-group,
+        #newOrderModal .form-input,
+        #newOrderModal select,
+        #newOrderModal textarea,
+        #newRouteModal .form-input,
+        #newRouteModal select,
+        #newRouteModal textarea {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        #newRouteModal {
+            display: none;
+            position: fixed !important;
+            z-index: 9999 !important;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(4px);
+        }
+        #newRouteModal .modal-content {
+            background: #fff;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 650px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        #marketplace-section { background: #f8f8f8; padding: 60px 5%; }
+        #marketplace-section .mp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            #marketplace-section .mp-grid { grid-template-columns: 1fr; }
+        }
+        .mp-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #eee;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+        .mp-panel h3 { margin-bottom: 16px; color: #A68B5C; }
+        .mp-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .mp-card-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .mp-status { font-size: 12px; color: #2e7d32; font-weight: 600; }
+        .mp-meta { font-size: 12px; color: #777; margin-top: 4px; }
+        .mp-loading, .mp-empty, .mp-error { text-align: center; color: #888; padding: 20px; }
+        .list-row { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+
+        /* Yan-yana duran xanaların (Məsələn: Çəki + Vahid) nizamlanması */
+        #newOrderModal div[style*="display: flex"] {
+            display: flex !important;
+            flex-wrap: wrap !important; /* Yer çatmayanda alt-alta düşmək icazəsi */
+            gap: 12px !important;
+        }
+
+        #newOrderModal div[style*="display: flex"] > * {
+            flex: 1 1 120px !important; /* Elementlərin bərabər bölünməsi */
+        }
+
+        /* Animasiya təyinatsı */
+        @keyframes modalSlideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* TELEFONLAR ÜÇÜN XÜSUSİ UYĞUNLUQ (Maksimum 576px ekran) */
+        @media screen and (max-width: 576px) {
+            #newOrderModal .modal-content {
+                margin: 15px auto !important;
+                padding: 20px 15px !important;
+                width: 95% !important; /* Mobildə kənarlara tam otursun */
+            }
+            
+            #newOrderModal div[style*="display: flex"] {
+                flex-direction: column !important; /* Mobildə yan-yana olan hər şeyi alt-alta salır */
+                gap: 8px !important;
+            }
+            
+            #newOrderModal .btn-customer {
+                width: 100% !important; /* Təsdiq düyməsi mobildə tam enlik olsun */
+            }
+        }
+
+        /* ==========================================================================
+           MÖVCUD İSTİFADƏÇİ PANELİ VƏ DÜYMƏ DİZAYNLARI
+           ========================================================================== */
+        .user-profile-container {
+            position: relative;
+            display: inline-block;
+        }
+        .user-avatar-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary, #A68B5C);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .user-avatar-btn:hover {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(166, 139, 92, 0.5);
+        }
+        .user-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: #fff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #eee;
+            animation: fadeInShort 0.2s ease;
+        }
+        .user-dropdown-menu a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s ease;
+        }
+        .user-dropdown-menu a:hover {
+            background-color: #f5f5f5;
+            color: var(--primary, #A68B5C);
+        }
+        .user-dropdown-menu .menu-divider {
+            border-top: 1px solid #eee;
+            margin: 0;
+        }
+        
+        .dashboard-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .dashboard-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-dash-action {
+            background: #fff;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-dash-action:hover {
+            background: #fafafa;
+            border-color: var(--primary, #A68B5C);
+            color: var(--primary, #A68B5C);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .btn-dash-action.create-btn {
+            background: var(--primary, #A68B5C);
+            color: #fff;
+            border-color: var(--primary, #A68B5C);
+        }
+        .btn-dash-action.create-btn:hover {
+            background: #937a4f;
+            color: #fff;
+        }
+        .btn-dash-action .btn-icon {
+            font-size: 18px;
+        }
+        
+        @keyframes fadeInShort {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-area" onclick="scrollToSection('home')">
+            <img src="img/logo.jpg" alt="Yolasal Logo" class="site-logo">
+        </div>
+        
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <nav class="nav-links">
+            <ul id="nav-list">
+                <li onclick="scrollToSection('services-section')">Xidmətlər</li>
+                <li onclick="scrollToSection('fleet-section')">Avtopark</li>
+                <li onclick="scrollToSection('about-section')">Haqqımızda</li>
+                <li onclick="scrollToSection('contact-section')">Əlaqə</li>
+                
+                <li id="nav-auth-container">
+                    <button class="btn-customer" id="loginBtn" onclick="openLogin()">MÜŞTƏRİ GİRİŞİ</button>
+                    
+                    <div id="userProfileArea" class="user-profile-container" style="display: none;">
+                        <div class="user-avatar-btn" id="userAvatarBtn" onclick="toggleUserDropdown(event)">
+                            👤
+                        </div>
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <a href="#" onclick="openSettings(event)">⚙️ Ayarlar</a>
+                            <div class="menu-divider"></div>
+                            <a href="#" onclick="logoutUser(event)" style="color: #d9534f;">🚪 Çıxış</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="customerDashboard" class="premium-services fade-in" style="display: none; background: #fdfdfd; border-bottom: 2px solid #eee;">
+        <div style="max-width: 1200px; margin: 0 auto; text-align: left; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px;">
+                <h2>Xoş gəldiniz, <span id="dashUserName" style="color: var(--primary);">Müştəri</span>!</h2>
+                <button class="btn-customer" onclick="logoutUser(event)" style="background: #d9534f; padding: 8px 18px; font-size: 14px;">ÇIXIŞ</button>
+            </div>
+            
+            <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                <div class="service-card" style="padding: 25px; text-align: center;">
+                    <h4 style="color: #888; font-size: 12px; text-transform: uppercase;">Müştəri ID</h4>
+                    <p id="dashUserId" style="font-size: 22px; font-weight: 800; color: var(--dark); margin-top: 5px;">-</p>
+                </div>
+                <div class="service-card" style="padding: 25px; text-align: center;">
+                    <h4 style="color: #888; font-size: 12px; text-transform: uppercase;">Şirkət / MMC</h4>
+                    <p id="dashUserMmc" style="font-size: 18px; font-weight: 600; color: var(--dark); margin-top: 5px;">-</p>
+                </div>
+                <div class="service-card" style="padding: 25px; text-align: center;">
+                    <h4 style="color: #888; font-size: 12px; text-transform: uppercase;">Telefon nömrəsi</h4>
+                    <p id="dashUserPhone" style="font-size: 18px; font-weight: 600; color: var(--dark); margin-top: 5px;">-</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding: 30px; background: #fff; border: 1px dashed #ccc; border-radius: 15px; text-align: center; color: #666;">
+                <p style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px;">Şəxsi kabinetiniz aktivdir.</p>
+                <p style="font-size: 14px; color: #777;">Buradan sifarişlərinizi və reyslərinizi idarə edə bilərsiniz.</p>
+                
+                <div class="dashboard-actions-grid">
+                    <div class="dashboard-col">
+                        <button class="btn-dash-action create-btn" onclick="handleDashboardAction('new-order')">
+                            <span>📦 Yeni sifariş yarat</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('active-orders')">
+                            <span>🔵 Aktiv sifarişlərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('in-progress-orders')">
+                            <span>⏳ İcrada olan sifarişlərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('delivered-orders')">
+                            <span>✅ Təslim edilən sifarişlərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('search-orders')" style="margin-top: 10px; border-style: dashed;">
+                            <span>🔍 Filtr ilə sifarişləri axtar</span>
+                            <span class="btn-icon">⚙️</span>
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-col">
+                        <button class="btn-dash-action create-btn" onclick="handleDashboardAction('new-route')">
+                            <span>🚛 Yeni reys yarat</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('active-routes')">
+                            <span>🟢 Aktiv reyslərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('in-progress-routes')">
+                            <span>⚡ İcrada olan reyslərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('completed-routes')">
+                            <span>🏁 Tamamlanmış reyslərim</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                        <button class="btn-dash-action" onclick="handleDashboardAction('search-routes')" style="margin-top: 10px; border-style: dashed;">
+                            <span>🔍 Filtr ilə reysləri axtar</span>
+                            <span class="btn-icon">⚙️</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>ETİBARLI LOQİSTİKA HƏLLƏRİ</h1>
+            <p>YÜKÜNÜZ BİZİMLƏ HƏMİŞƏ VAXTINDA VƏ SAĞLAM ÇATIR!</p>
+            <div class="search-panel">
+                <input type="text" id="trackInput" placeholder="Yükü izləmək üçün nömrəni yazın...">
+                <button class="btn-search">Yükü İzlə</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="live-activity">
+        <div class="stats-container">
+            <div class="stat-box" onclick="showLiveDetails('aktiv-sifaris')">
+                <span class="num" id="stat-active-orders">0</span>
+                <span class="lab">Aktiv Sifarişlər</span>
+            </div>
+            <div class="stat-box" onclick="showLiveDetails('aktiv-reys')">
+                <span class="num" id="stat-active-routes">0</span>
+                <span class="lab">Aktiv Reyslər</span>
+            </div>
+            <div class="stat-box" onclick="showLiveDetails('icra-sifaris')">
+                <span class="num" id="stat-progress-orders">0</span>
+                <span class="lab">İcrada Sifarişlər</span>
+            </div>
+            <div class="stat-box" onclick="showLiveDetails('icra-reys')">
+                <span class="num" id="stat-progress-routes">0</span>
+                <span class="lab">İcrada Reyslər</span>
+            </div>
+            <div class="stat-box" onclick="showLiveDetails('teslimat')">
+                <span class="num" id="stat-delivered">0</span>
+                <span class="lab">Təslimatlar</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="marketplace-section" class="premium-services">
+        <h2 class="section-title">Bazar — Bütün Sifariş və Reyslər</h2>
+        <p style="text-align:center;color:#666;margin-bottom:30px;max-width:700px;margin-left:auto;margin-right:auto;">
+            Burada sistemdəki bütün istifadəçilərin paylaşdığı sifarişlər və reyslər görünür.
+        </p>
+        <div class="mp-grid">
+            <div class="mp-panel">
+                <h3>📦 Sifarişlər</h3>
+                <div id="marketplaceOrders"></div>
+            </div>
+            <div class="mp-panel">
+                <h3>🚛 Reyslər</h3>
+                <div id="marketplaceRoutes"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="premium-services" id="services-section">
+        <h2 class="section-title">Eksklüziv Xidmətlərimiz</h2>
+        <div class="services-grid">
+            <div class="service-card"><h3>💼 Korporativ</h3><p>Biznesiniz üçün fərdi loqistika və tədarük zənciri həlləri.</p></div>
+            <div class="service-card"><h3>✈️ Ekspres</h3><p>Sərhədləri aşan ən sürətli və təhlükəsiz çatdırılma xidməti.</p></div>
+            <div class="service-card"><h3>💎 Özəl</h3><p>Yüksək dəyərli və həssas yüklərin xüsusi sığorta ilə daşınması.</p></div>
+            <div class="service-card"><h3>📡 Smart</h3><p>Yükünüzün real vaxt rejimində GPS və sensorlarla izlənilməsi.</p></div>
+        </div>
+    </section>
+
+    <section class="premium-services" id="fleet-section" style="background: #fcfcfc;">
+        <h2 class="section-title">Professional Avtopark</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="fleet-icon">🚛</div>
+                <h3>Ağır Tonnajlı</h3>
+                <p>20-24 tonluq beynəlxalq standartlara uyğun TIR-lar.</p>
+            </div>
+            <div class="service-card">
+                <div class="fleet-icon">🚚</div>
+                <h3>Orta Tonnajlı</h3>
+                <p>Şəhərlərarası daşımalar üçün 5-10 tonluq izotermik maşınlar.</p>
+            </div>
+            <div class="service-card">
+                <div class="fleet-icon">🚐</div>
+                <h3>Ekspres Mikro</h3>
+                <p>Kiçik həcmli yüklərin şəhərdaxili sürətli paylanması.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="premium-services" id="about-section">
+        <h2 class="section-title">Haqqımızda</h2>
+        <div class="about-container" style="max-width: 900px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 18px; color: #555; line-height: 1.8;">
+                <strong>Yolasal</strong> olaraq biz, Azərbaycanın loqistika ekosistemini rəqəmsallaşdırırıq. Məqsədimiz yük sahibləri ilə sürücülər arasında şəffaf, sürətli və etibarlı bir körpü qurmaqdır. İllərin təcrübəsi və müasir texnologiyalarla yükünüzü sadəcə daşımırıq, onu qoruyuq.
+            </p>
+        </div>
+    </section>
+
+    <section id="contact-section" class="premium-services" style="background: #1a1a1a; color: #fff; padding: 80px 10% 40px 10%;">
+        <h2 class="section-title" style="color: #fff;">Bizimlə Əlaqə</h2>
+        <div class="services-grid">
+            <div class="contact-item"><h4>📍 ÜNVAN</h4><p>Bakı, Azərbaycan</p></div>
+            <div class="contact-item"><h4>📞 ZƏNG</h4><p>+994 (99) 789 59 69</p></div>
+            <div class="contact-item"><h4>✉️ E-POÇT</h4><p>info@yolasal.az</p></div>
+        </div>
+        <div class="footer-bottom" style="margin-top: 50px; border-top: 1px solid #333; padding-top: 20px; font-size: 12px; color: #666;">
+            &copy; 2026 Yolasal Loqistika Platforması. Bütün hüquqlar qorunur.
+        </div>
+    </section>
+
+    <div id="activityModal" class="activity-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeActivityModal()">&times;</span>
+            <h3 id="modalTitle">Məlumat</h3>
+            <div id="modalData" class="data-list"></div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="activity-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" id="closeLogin">&times;</span>
+            
+            <div id="loginFormArea">
+                <h3 style="margin-bottom: 20px; text-align: center; color: #A68B5C;">Müştəri Girişi</h3>
+                <input type="text" id="loginId" placeholder="Müştəri ID-si, Mail və ya Nömrə" class="form-input">
+                <input type="password" id="loginPass" placeholder="Şifrəniz" class="form-input">
+                <button class="btn-customer" id="submitLoginBtn" onclick="handleLoginProcess()" style="width: 100%; padding: 15px;">DAXİL OL</button>
+                <div style="text-align: center; margin-top: 15px; font-size: 13px;">
+                    <a href="#" id="forgotPass" style="color: #888; text-decoration: none;">Parolu bərpa et</a>
+                </div>
+                <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                    Hesabınız yoxdur? <a href="#" id="showReg" style="color: #A68B5C; font-weight: bold; text-decoration: none;">Qeydiyyatdan keçin</a>
+                </p>
+            </div>
+
+            <div id="regFormArea" style="display: none;">
+                <h3 style="margin-bottom: 20px; text-align: center; color: #A68B5C;">Yeni Qeydiyyat</h3>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="regName" placeholder="Ad *" class="form-input" required>
+                    <input type="text" id="regSurname" placeholder="Soyad *" class="form-input" required>
+                </div>
+                <div style="display: flex; gap: 5px; margin-bottom: 12px;">
+                    <select id="regPrefix" class="form-input" style="width: 100px;">
+                        <option>050</option><option>051</option><option>055</option>
+                        <option>070</option><option>077</option><option>099</option><option>010</option>
+                    </select>
+                    <input type="tel" id="regPhone" placeholder="xxx-xx-xx *" class="form-input" style="flex: 1;" required>
+                </div>
+                <input type="email" id="regEmail" placeholder="Mail Ünvanı *" class="form-input" required>
+                <select id="citySelect" class="form-input" required><option value="">Yaşadığınız rayonu seçin *</option></select>
+                <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+                    <label style="font-size: 14px;"><input type="radio" name="gender" value="Kişi" checked> Kişi</label>
+                    <label style="font-size: 14px;"><input type="radio" name="gender" value="Qadın"> Qadın</label>
+                </div>
+                <input type="date" id="regBirth" class="form-input" required title="Doğum Tarixi">
+                <input type="text" id="regMMC" placeholder="MMC adı (varsa)" class="form-input">
+                <input type="password" id="regPassword" placeholder="Parol təyin edin *" class="form-input" required>
+                <button type="button" class="btn-customer" id="startRegBtn" style="width: 100%; padding: 15px;">QEYDİYYATDAN KEÇ</button>
+                <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                    Artıq hesabınız var? <a href="#" id="showLogin" style="color: #A68B5C; font-weight: bold; text-decoration: none;">Giriş edin</a>
+                </p>
+            </div>
+
+            <div id="otpFormArea" style="display: none; text-align: center;">
+                <h3 style="margin-bottom: 10px; color: #A68B5C;">Təsdiq Kodu</h3>
+                <p style="font-size: 13px; margin-bottom: 20px;">Mailinizə gələn 4 rəqəmli kodu yazın.</p>
+                <input type="text" id="otpInput" maxlength="4" class="form-input" style="font-size: 24px; text-align: center; letter-spacing: 8px;">
+                <button type="button" class="btn-customer" id="verifyOtpBtn" style="width: 100%; padding: 15px; margin-top: 20px;">TƏSDİQLƏ</button>
+            </div>
+        </div>
+    </div>
+    <div id="newOrderModal" class="activity-modal" style="display: none; padding-top: 50px; overflow-y: auto;">
+    <div class="modal-content" style="max-width: 700px; margin-bottom: 50px;">
+        <span class="close-modal" onclick="closeNewOrderModal()">&times;</span>
+        
+        <h3 style="margin-bottom: 25px; text-align: center; color: #A68B5C; font-family: 'Inter', sans-serif; font-weight: 800;">📦 YENİ SİFARİŞ YARAT</h3>
+        
+        <form id="newOrderForm" onsubmit="submitNewOrder(event)" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Malın Növü *</label>
+                    <select id="orderGoodType" class="form-input" style="margin-bottom: 0;" required>
+                        <option value="">Seçin *</option>
+                        <option value="Tikinti materialları">Tikinti materialları</option>
+                        <option value="Qida və Kənd təsərrüfatı">Qida və Kənd təsərrüfatı</option>
+                        <option value="Tekstil və Geyim">Tekstil və Geyim</option>
+                        <option value="Elektronika və Texnika">Elektronika və Texnika</option>
+                        <option value="Kimyəvi və Maye yüklər">Kimyəvi və Maye yüklər</option>
+                        <option value="Mebel və Ev əşyaları">Mebel və Ev əşyaları</option>
+                        <option value="Avtomobil və Ehtiyat hissələri">Avtomobil və Ehtiyat hissələri</option>
+                        <option value="Plastik və Rezin məmulatlar">Plastik və Rezin məmulatlar</option>
+                        <option value="Kağız və Poloqrafiya">Kağız və Poloqrafiya</option>
+                        <option value="Tibbi və Əczaçılıq məhsulları">Tibbi və Əczaçılıq məhsulları</option>
+                        <option value="Digər">Digər</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Malın Adı *</label>
+                    <input type="text" id="orderGoodName" placeholder="Məs: Sement, Un, Soyuducu və s." class="form-input" style="margin-bottom: 0;" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Malın Materialı *</label>
+                    <select id="orderMaterial" class="form-input" style="margin-bottom: 0;" required>
+                        <option value="">Seçin *</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Taxta / Ağac">Taxta / Ağac</option>
+                        <option value="Plastik / Polimer">Plastik / Polimer</option>
+                        <option value="Şüşə / Keramika">Şüşə / Keramika</option>
+                        <option value="Beton / Daş / Sement">Beton / Daş / Sement</option>
+                        <option value="Parça / Tekstil">Parça / Tekstil</option>
+                        <option value="Kağız / Karton">Kağız / Karton</option>
+                        <option value="Maye / Qaz">Maye / Qaz</option>
+                        <option value="Üzvi / Qida">Üzvi / Qida</option>
+                        <option value="Digər">Digər</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Sınma Həssaslığı *</label>
+                    <select id="orderFragility" class="form-input" style="margin-bottom: 0;" required>
+                        <option value="">Seçin *</option>
+                        <option value="Çox həssas">Çox həssas</option>
+                        <option value="Həssas">Həssas</option>
+                        <option value="Nisbətən həssas">Nisbətən həssas</option>
+                        <option value="Çox az həssas">Çox az həssas</option>
+                        <option value="Sınmaz material">Sınmaz material</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Çəkisi *</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" step="any" id="orderWeightVal" placeholder="Dəyər" class="form-input" style="flex: 1; margin-bottom: 0;" required>
+                        <select id="orderWeightUnit" class="form-input" style="width: 110px; margin-bottom: 0;" required>
+                            <option value="kiloqram">kiloqram</option>
+                            <option value="qram">qram</option>
+                            <option value="litr">litr</option>
+                            <option value="ton">ton</option>
+                            <option value="barel">barel</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Eni *</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" step="any" id="orderWidthVal" placeholder="Dəyər" class="form-input" style="flex: 1; margin-bottom: 0;" required>
+                        <select id="orderWidthUnit" class="form-input" style="width: 110px; margin-bottom: 0;" required>
+                            <option value="metr">metr</option>
+                            <option value="millimetr">millimetr</option>
+                            <option value="santimetr">santimetr</option>
+                            <option value="desimetr">desimetr</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Uzunluğu *</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" step="any" id="orderLengthVal" placeholder="Dəyər" class="form-input" style="flex: 1; margin-bottom: 0;" required>
+                        <select id="orderLengthUnit" class="form-input" style="width: 110px; margin-bottom: 0;" required>
+                            <option value="metr">metr</option>
+                            <option value="millimetr">millimetr</option>
+                            <option value="santimetr">santimetr</option>
+                            <option value="desimetr">desimetr</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Hündürlüyü *</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" step="any" id="orderHeightVal" placeholder="Dəyər" class="form-input" style="flex: 1; margin-bottom: 0;" required>
+                        <select id="orderHeightUnit" class="form-input" style="width: 110px; margin-bottom: 0;" required>
+                            <option value="metr">metr</option>
+                            <option value="millimetr">millimetr</option>
+                            <option value="santimetr">santimetr</option>
+                            <option value="desimetr">desimetr</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təhvil Alınacaq Şəhər *</label>
+                    <select id="orderPickupCity" class="form-input" style="margin-bottom: 0;" required>
+                        <option value="">Seçin *</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təhvil Alınacaq Konkret Ünvan *</label>
+                    <input type="text" id="orderPickupAddress" placeholder="Məs: Nizami küç. 45, Anbar N3" class="form-input" style="margin-bottom: 0;" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təslim Ediləcək Şəhər *</label>
+                    <select id="orderDropCity" class="form-input" style="margin-bottom: 0;" required>
+                        <option value="">Seçin *</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təslim Ediləcək Konkret Ünvan *</label>
+                    <input type="text" id="orderDropAddress" placeholder="Məs: Heydər Əliyev pr. 12" class="form-input" style="margin-bottom: 0;" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təhvil Tarixi *</label>
+                    <input type="date" id="orderPickupDate" class="form-input" style="margin-bottom: 0;" required>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təslim Tarixi *</label>
+                    <input type="date" id="orderDropDate" class="form-input" style="margin-bottom: 0;" required>
+                </div>
+            </div>
+
+            <div style="width: 100%;">
+                <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Təklif Olunan Büdcə *</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="any" id="orderBudgetVal" placeholder="Məbləğ yazın" class="form-input" style="flex: 1; margin-bottom: 0;" required>
+                    <select id="orderBudgetCurrency" class="form-input" style="width: 110px; margin-bottom: 0;" required>
+                        <option value="AZN">AZN</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="TRY">TRY</option>
+                        <option value="RUB">RUB</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="width: 100%;">
+                <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px;">Əlavə Qeyd (İstəyə bağlı)</label>
+                <textarea id="orderNotes" placeholder="Yük ilə bağlı bilməli olduğumuz xüsusi qeydlər..." class="form-input" style="width: 100%; height: 80px; padding: 10px; font-family: 'Inter', sans-serif; resize: none;"></textarea>
+            </div>
+
+            <button type="submit" class="btn-customer" id="submitOrderBtn" style="width: 100%; padding: 15px; margin-top: 10px; font-weight: bold; font-size: 16px;">SİFARİŞİ TƏSDİQLƏ VƏ PAYLAŞ</button>
+        </form>
+    </div>
+</div>
+
+<div id="newRouteModal" class="activity-modal" style="display:none;">
+    <div class="modal-content" style="max-width: 650px; margin: 30px auto;">
+        <span class="close-modal" onclick="closeNewRouteModal()">&times;</span>
+        <h3 style="margin-bottom: 25px; text-align: center; color: #A68B5C; font-weight: 800;">🚛 YENİ REYS YARAT</h3>
+        <form id="newRouteForm" onsubmit="submitNewRoute(event)" style="display: flex; flex-direction: column; gap: 15px;">
+            <label style="font-size: 13px; font-weight: 600;">Nəqliyyat növü *</label>
+            <select id="routeVehicleType" class="form-input" required>
+                <option value="">Seçin</option>
+                <option value="TIR">TIR</option>
+                <option value="10 ton">10 tonluq</option>
+                <option value="5 ton">5 tonluq</option>
+                <option value="Furgon">Furgon</option>
+                <option value="Digər">Digər</option>
+            </select>
+            <label style="font-size: 13px; font-weight: 600;">Tutum / yükləmə gücü *</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="number" step="any" id="routeCapacityVal" class="form-input" placeholder="Məs: 20" required style="flex:1;">
+                <select id="routeCapacityUnit" class="form-input" style="width: 110px;" required>
+                    <option value="ton">ton</option>
+                    <option value="kiloqram">kiloqram</option>
+                    <option value="m3">m³</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex:1; min-width: 200px;">
+                    <label style="font-size: 13px; font-weight: 600;">Haradan (şəhər) *</label>
+                    <select id="routePickupCity" class="form-input" required><option value="">Seçin</option></select>
+                </div>
+                <div style="flex:1; min-width: 200px;">
+                    <label style="font-size: 13px; font-weight: 600;">Haradan (ünvan) *</label>
+                    <input type="text" id="routePickupAddress" class="form-input" required>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex:1; min-width: 200px;">
+                    <label style="font-size: 13px; font-weight: 600;">Hara (şəhər) *</label>
+                    <select id="routeDropCity" class="form-input" required><option value="">Seçin</option></select>
+                </div>
+                <div style="flex:1; min-width: 200px;">
+                    <label style="font-size: 13px; font-weight: 600;">Hara (ünvan) *</label>
+                    <input type="text" id="routeDropAddress" class="form-input" required>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex:1;">
+                    <label style="font-size: 13px; font-weight: 600;">Yola çıxma tarixi *</label>
+                    <input type="date" id="routeDepartureDate" class="form-input" required>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size: 13px; font-weight: 600;">Boşalma tarixi *</label>
+                    <input type="date" id="routeAvailableDate" class="form-input" required>
+                </div>
+            </div>
+            <label style="font-size: 13px; font-weight: 600;">Qiymət *</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="number" step="any" id="routePriceVal" class="form-input" required style="flex:1;">
+                <select id="routePriceCurrency" class="form-input" style="width: 110px;" required>
+                    <option value="AZN">AZN</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+            <label style="font-size: 13px; font-weight: 600;">Qeyd</label>
+            <textarea id="routeNotes" class="form-input" rows="3" style="resize:none;"></textarea>
+            <button type="submit" class="btn-customer" id="submitRouteBtn" style="width: 100%; padding: 15px;">REYSİ TƏSDİQLƏ VƏ PAYLAŞ</button>
+        </form>
+    </div>
+</div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui-controller.js"></script>
+</body>
+</html>
